@@ -62,8 +62,6 @@ $(document).ready(function() {
                 user: user.uid,
       })
         
-        
-        console.log("player 1 picked")
       database.ref().on("value", function(snapshot){
           playerOne = snapshot.val().user;
           
@@ -74,9 +72,9 @@ $(document).ready(function() {
 
       })
     
+      playerOneSelect = true;
 
-        
+    
+    })
 
-})
-
-    });
+});
