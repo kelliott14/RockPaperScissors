@@ -18,9 +18,10 @@ $(document).ready(function() {
     var playerOneSelect;
     var playerTwoSelect;
     var user;
-    var thisUser;
+    var userIs;
     var uid;
     var playerOne;
+    var playerTwo;
 
     //on initial load of the page
     function onLoad(){
@@ -44,6 +45,7 @@ $(document).ready(function() {
     
     onLoad();
 
+    //Player One select
     $("body").on("click", "#playerOnePick", function(){
     
       firebase.auth().signInAnonymously().catch(function(error) {
@@ -66,15 +68,61 @@ $(document).ready(function() {
           playerOne = snapshot.val().user;
           
         if (playerOne = uid){
-            thisUser = true;
+            userIs = ("playerOne");
+            console.log(userIs);
 
-        }else (thisUser = false)
+        }
 
       })
-    
       playerOneSelect = true;
 
     
-    })
+    });
+
+    //player two select
+    $("body").on("click", "#playerTwoPick", function(){
+    
+        firebase.auth().signInAnonymously().catch(function(error) {
+            var errorCode = error.code;
+            var errorMessage = error.message;
+                  });
+          user = firebase.auth().currentUser;
+          firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                  var isAnonymous = user.isAnonymous;
+                  uid = user.uid;
+              }
+          })
+  
+          database.ref("/playerTwo").set({
+                  user: user.uid,
+        })
+          
+        database.ref().on("value", function(snapshot){
+            playerOne = snapshot.val().user;
+            
+          if (playerTwo = uid){
+              userIs = ("playerTwo");
+            
+          }
+  
+        })
+      
+        playerTwoSelect = true;
+        console.log(userIs);
+      });
+
+    function startGame(){
+        if(userIs == "playerOne"){
+            $(".playerTwoDiv").hide();
+        }else if(userIs == "playerTwo"){
+            $(".playerOneDiv").hide();
+        }
+    }
+
+
+    if((playerOneSelect) && (playerTwoSelect) == true){
+        startGame();
+    }
 
 });
