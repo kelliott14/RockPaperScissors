@@ -67,17 +67,15 @@ $(document).ready(function() {
       database.ref().on("value", function(snapshot){
           playerOne = snapshot.val().user;
           
+        if (playerOne = uid){
+            thisUser = true;
+
+        }else (thisUser = false)
+
       })
     
 
-        if (playerOne = uid){
-            thisUser = true;
-        }else (thisUser = false)
-
-        console.log(thisUser)
-        console.log(playerOne)
-        console.log(uid)
-    
+        
 
 })
 
