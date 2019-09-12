@@ -39,14 +39,30 @@ $(document).ready(function() {
 
         playerOneSelect = false;
         playerTwoSelect = false;
+        $(".readySetGoCard").hide();
+        $(".playerOneCard").hide();
+        $(".playerTwoCard").hide();
+
+        database.ref("/playerOne").set({
+            user: null,
+        })
+
+        database.ref("/playerTwo").set({
+            user: null,
+        })
         
     //TO-DO: clear chatbox
     }
     
     onLoad();
+    selectPlayerOne();    
 
     //Player One select
+function selectPlayerOne(){
+   $(".playerOneCard").show();
+   
     $("body").on("click", "#playerOnePick", function(){
+        
     
       firebase.auth().signInAnonymously().catch(function(error) {
           var errorCode = error.code;
@@ -73,12 +89,27 @@ $(document).ready(function() {
 
         }
 
-      })
-      playerOneSelect = true;
-
+    })
+    playerOneSelect = true;
+    $(".readySetGoCard").show();
+    $(".readyOneButton").text("Player One, are you ready?");
+    $(".readyTwoButton").hide();
+    $(".winnerButton").hide();
     
+    $(".readyOneButton").on("click", function(){
+        $(".readyOneButton").text("Ready!")
+    })
     });
+}
+    
+database.ref("/playerOne").on("child_added", function(){
+    selectPlayerTwo();
 
+})
+
+
+function selectPlayerTwo(){
+    $(".playerTwoCard").show();
     //player two select
     $("body").on("click", "#playerTwoPick", function(){
     
@@ -110,19 +141,22 @@ $(document).ready(function() {
       
         playerTwoSelect = true;
         console.log(userIs);
+        $(".readySetGoCard").show();
+        $(".readyTwoButton").text("Player Two, are you ready?");
+        $(".winnerButton").hide();
       });
 
-    function startGame(){
-        if(userIs == "playerOne"){
-            $(".playerTwoDiv").hide();
-        }else if(userIs == "playerTwo"){
-            $(".playerOneDiv").hide();
-        }
+    $(".readyTwoButton").on("click", function(){
+            $(".readyTwoButton").text("Ready!")
+        })
+
+
     }
 
 
-    if((playerOneSelect) && (playerTwoSelect) == true){
-        startGame();
-    }
+    
+
+    
+    
 
 });
