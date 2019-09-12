@@ -188,28 +188,32 @@ database.ref("/playerTwo").on("value", function(snapshot){
 
         $("#playerOnePick").hide();
         $("#playerTwoPick").hide();
-        
+        $(".winnerButton").hide();
+
         if (playerOne == uid){
             var otherDiv1 = $(".playerTwoCard").html("<div>")
             $(otherDiv1).addClass("notMine")
 
+
            
-            var scissors1 = $("<img src='./assets/images/ScissorsIcon.JPG'>");
-            var paper1 = $("<img src='./assets/images/PaperIcon.JPG'>");
-            var rock1 = $("<img src='./assets/images/RockIcon.JPG'>");
+            var scissors1 = $("<div class = 'card'><img src='./assets/images/ScissorsIcon.JPG'></div>");
+            var paper1 = $("<div class = 'card'><img src='./assets/images/PaperIcon.JPG'></div>");
+            var rock1 = $("<div class = 'card'><img src='./assets/images/RockIcon.JPG'></div>");
 
             $(".playerOneCard").append(scissors1, paper1, rock1);
+            $(".playerOneCard").addClass("card-group")
+
          
         }else if (playerTwo == uid){
                 var otherDiv2 = $(".playerOneCard").html("<div>")
                 $(otherDiv2).addClass("notMine")
     
-                var scissors2 = $("<img src='./assets/images/ScissorsIcon.JPG'>");
-                var paper2 = $("<img src='./assets/images/PaperIcon.JPG'>");
-                var rock2 = $("<img src='./assets/images/RockIcon.JPG'>");
+                var scissors2 = $("<div class = 'card'><img src='./assets/images/ScissorsIcon.JPG'></div>");
+                var paper2 = $("<div class = 'card'><img src='./assets/images/PaperIcon.JPG'></div>");
+                var rock2 = $("<div class = 'card'><img src='./assets/images/RockIcon.JPG'></div>");
     
                 $(".playerTwoCard").append(scissors2, paper2, rock2);
-             
+                $(".playerTwoCard").addClass("card-group")
             }
         }
     
