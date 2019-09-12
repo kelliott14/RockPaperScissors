@@ -242,17 +242,14 @@ database.ref("/playerTwo").on("value", function(snapshot){
     database.ref("/playerOne").on("value", function(snapshot){
             p1Pick = snapshot.val().pick;
             p1Round = snapshot.val().round;
-            console.log(p1Round)
     });
     
     database.ref("/playerTwo").on("value", function(snapshot){
             p2Pick = snapshot.val().pick;
-            p2Round = snapshot.val().round;
-            console.log(p2Round)
-        
+            p2Round = snapshot.val().round;        
         })
 
-    $(".readyOneButton").on("click", "#p1Play", function(){
+    $(".readySetGoCard").on("click", "#p1Play", function(){
 
         if(p2Round){
             database.ref("/round").set({
@@ -277,7 +274,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
 
     })
 
-    $(".readyTwoButton").on("click", "#p2Play", function(){
+    $(".readySetGoCard").on("click", "#p2Play", function(){
 
         if(p1Round){
             database.ref("/round").set({
@@ -296,6 +293,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
     })
 
     function checkWinner(){
+        
         if(p1Pick == p2Pick){
             $(".winnerButton").text("it's a tie!");
 
@@ -303,8 +301,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
             (p1Pick == "rock") && (p2Pick == "scissors") ||
             (p1Pick == "scissors") && (p2Pick == "paper") ||
             (p1Pick == "paper") && (p2Pick == "rock")){
-                $(".winnerButton").text("Player One Wins!")
-                updateP1Scorecard();
+                $(".winnerButton").text("Player One Wins!");
 
                 database.ref("/playerOne/Score").update({
                     winsTally: 1
@@ -315,7 +312,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
                 });
         }else{
             $(".winnerButton").text("Player Two Wins!")
-            updateP2Scorecard();
+            
             database.ref("/playerTwo/Score").update({
                 winsTally: 1
             });
@@ -324,14 +321,17 @@ database.ref("/playerTwo").on("value", function(snapshot){
                 lossesTally: 1
             });
         }
+
+        updateP1Scorecard();
+        updateP2Scorecard();
     }
 
-    database.ref("/playerOne/Score").on("value", function(snapshot){
+    database.ref("/playerOne").on("value", function(snapshot){
         p1WinsTally = snapshot.val().Score.winsTally;
         p1LossTally = snapshot.val().Score.lossesTally
     });
     
-    database.ref("/playerTwo/Score").on("value", function(snapshot){
+    database.ref("/playerTwo").on("value", function(snapshot){
         p2WinsTally = snapshot.val().Score.winsTally;
         p2LossTally = snapshot.val().Score.lossesTally
     });
@@ -339,21 +339,21 @@ database.ref("/playerTwo").on("value", function(snapshot){
     function updateP1Scorecard(){
         var SCDiv = $("<div>");
 
-        var p1W = $("<p>Wins: " + p1WinsTally);
-        var p1L = $("<p>Wins: " + p1LossTally);
+        var p1W = $("<p>Wins: " + p1WinsTally + "</p>");
+        var p1L = $("<p>Losses: " + p1LossTally + "</p>");
 
         $(SCDiv).append(p1W, p1L);
-        $(".P1SCard").append(SCDiv);
+        $(".P1SCard").html(SCDiv);
     }
 
     function updateP2Scorecard(){
         var SCDiv = $("<div>");
 
-        var p2W = $("<p>Wins: " + p2WinsTally);
-        var p2L = $("<p>Wins: " + p2LossTally);
+        var p2W = $("<p>Wins: " + p2WinsTally + "</p>");
+        var p2L = $("<p>Losses: " + p2LossTally + "</p>");
 
         $(SCDiv).append(p2W, p2L);
-        $(".P2SCard").append(SCDiv);
+        $(".P2SCard").html(SCDiv);
     }
 
 
