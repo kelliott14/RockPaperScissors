@@ -51,6 +51,9 @@ $(document).ready(function() {
             user: null
         })
 
+        database.ref("/state").set({
+            state: null
+        })
         
         
     //TO-DO: clear chatbox
@@ -79,12 +82,10 @@ function selectPlayerOne(){
         })
 
         database.ref("/playerOne").set({
-                user: user.uid,
+                p1ID: user.uid,
                 p1Selected: "true"
-      })
-        
-      
-    
+      });
+
     $(".readySetGoCard").show();
     $(".readyOneButton").text("Player One, are you ready?");
     $(".readyTwoButton").hide();
@@ -93,14 +94,7 @@ function selectPlayerOne(){
     $(".readyOneButton").on("click", function(){
         $(".readyOneButton").text("Ready!");
 
-        database.ref("/playerOne").on("value", function(snapshot){
-            playerOneSelect = snapshot.val().p1Selected;
-        });
-
-        database.ref("/playerTwo").on("value", function(snapshot){
-            playerTwoSelect = snapshot.val().p2Selected;
-        });
-
+        
         console.log(playerOneSelect)
         console.log(playerTwoSelect)
         if(playerTwoSelect){
@@ -111,7 +105,7 @@ function selectPlayerOne(){
     })
     });
 }
-    
+
 database.ref("/playerOne").on("child_added", function(){
     selectPlayerTwo();
     
@@ -138,10 +132,11 @@ function selectPlayerTwo(){
           })
   
           database.ref("/playerTwo").set({
-                  user: user.uid,
+                  p2ID: user.uid,
                   p2Selected: "true"
-        })
-     
+        });
+
+        
         $(".readySetGoCard").show();
         $(".readyOneButton").hide();
         $(".readyTwoButton").text("Player Two, are you ready?");
@@ -150,13 +145,9 @@ function selectPlayerTwo(){
 
         $(".readyTwoButton").on("click", function(){
         $(".readyTwoButton").text("Ready!");
-        database.ref("/playerOne").on("value", function(snapshot){
-            playerOneSelect = snapshot.val().p1Selected;
-        });
+        
 
-        database.ref("/playerTwo").on("value", function(snapshot){
-            playerTwoSelect = snapshot.val().p2Selected;
-        });
+        
         console.log(playerOneSelect)
         console.log(playerTwoSelect)
 
@@ -170,18 +161,22 @@ function selectPlayerTwo(){
 
         
     }
+
+
+database.ref("/playerOne").on("value", function(snapshot){
+    playerOneSelect = snapshot.val().p1Selected;
+    playerOne = snapshot.val().p1ID;
+});
+
+database.ref("/playerTwo").on("value", function(snapshot){
+    playerTwoSelect = snapshot.val().p2Selected;
+    playerTwo = snapshot.val().p2ID
+});
+
+
 //https://firebase.google.com/docs/database/web/read-and-write
     database.ref("/state").on("child_added", function(){
-
-        database.ref("/playerOne").on("value", function(){
-            playerOne = database.user;
-        });
-
-        database.ref("/playerTwo").on("value", function(){
-            playerTwo = database.user;
-        });
-
-            playGame();
+        playGame();
             console.log("play Game called")
             console.log("p1: " + playerOne)
             console.log("p2: " + playerTwo)
@@ -194,26 +189,26 @@ function selectPlayerTwo(){
         $("#playerOnePick").hide();
         $("#playerTwoPick").hide();
         
-        if (playerOne = uid){
-            var otherDiv = $(".playerTwoCard").html("<div>")
-            $(otherDiv).addClass("notMine")
+        if (playerOne == uid){
+            var otherDiv1 = $(".playerTwoCard").html("<div>")
+            $(otherDiv1).addClass("notMine")
 
            
-            var scissors = $("<img src='./assets/images/ScissorsIcon.JPG'>");
-            var paper = $("<img src='./assets/images/PaperIcon.JPG'>");
-            var rock = $("<img src='./assets/images/RockIcon.JPG'>");
+            var scissors1 = $("<img src='./assets/images/ScissorsIcon.JPG'>");
+            var paper1 = $("<img src='./assets/images/PaperIcon.JPG'>");
+            var rock1 = $("<img src='./assets/images/RockIcon.JPG'>");
 
-            $(".playerOneCard").append(scissors, paper, rock);
+            $(".playerOneCard").append(scissors1, paper1, rock1);
          
-        }else if (playerTwo = uid){
-                var otherDiv = $(".playerOneCard").html("<div>")
-                $(otherDiv).addClass("notMine")
+        }else if (playerTwo == uid){
+                var otherDiv2 = $(".playerOneCard").html("<div>")
+                $(otherDiv2).addClass("notMine")
     
-                var scissors = $("<img src='./assets/images/ScissorsIcon.JPG'>");
-                var paper = $("<img src='./assets/images/PaperIcon.JPG'>");
-                var rock = $("<img src='./assets/images/RockIcon.JPG'>");
+                var scissors2 = $("<img src='./assets/images/ScissorsIcon.JPG'>");
+                var paper2 = $("<img src='./assets/images/PaperIcon.JPG'>");
+                var rock2 = $("<img src='./assets/images/RockIcon.JPG'>");
     
-                $(".playerTwoCard").append(scissors, paper, rock);
+                $(".playerTwoCard").append(scissors2, paper2, rock2);
              
             }
         }

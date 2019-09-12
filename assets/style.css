@@ -1,3 +1,9 @@
 .notMine{
     width: 33%;
 }
+
+img{
+    width: 100px;
+    height: auto;
+    float: left;
+}
