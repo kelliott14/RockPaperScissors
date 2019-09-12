@@ -80,24 +80,19 @@ function selectPlayerOne(){
                 user: user.uid,
       })
         
-      database.ref().on("value", function(snapshot){
-          playerOne = snapshot.val().user;
-          
-        if (playerOne = uid){
-            userIs = ("playerOne");
-            console.log(userIs);
-
-        }
-
-    })
-    playerOneSelect = true;
+     
+    
     $(".readySetGoCard").show();
     $(".readyOneButton").text("Player One, are you ready?");
     $(".readyTwoButton").hide();
     $(".winnerButton").hide();
     
     $(".readyOneButton").on("click", function(){
-        $(".readyOneButton").text("Ready!")
+        $(".readyOneButton").text("Ready!");
+
+        database.ref("/playerOne").update({
+            state: "true",
+        })
     })
     });
 }
@@ -117,8 +112,10 @@ function selectPlayerTwo(){
             var errorCode = error.code;
             var errorMessage = error.message;
                   });
+
           user = firebase.auth().currentUser;
           firebase.auth().onAuthStateChanged(function(user) {
+
               if (user) {
                   var isAnonymous = user.isAnonymous;
                   uid = user.uid;
@@ -129,33 +126,49 @@ function selectPlayerTwo(){
                   user: user.uid,
         })
           
-        database.ref().on("value", function(snapshot){
-            playerOne = snapshot.val().user;
-            
-          if (playerTwo = uid){
-              userIs = ("playerTwo");
-            
-          }
-  
-        })
-      
+
         playerTwoSelect = true;
-        console.log(userIs);
+     
         $(".readySetGoCard").show();
         $(".readyTwoButton").text("Player Two, are you ready?");
         $(".winnerButton").hide();
       });
 
-    $(".readyTwoButton").on("click", function(){
-            $(".readyTwoButton").text("Ready!")
+        $(".readyTwoButton").on("click", function(){
+        $(".readyTwoButton").text("Ready!");
+
+        database.ref("/playerTwo").update({
+            state: "true",
+        });
+
         })
 
 
     }
 
+    database.ref("/playerOne").on("value", function(snapshot){
+        playerOneSelect = snapshot.val().state;
+        playerOne = snapshot.val().user;
+
+        console.log(playerOne)
+        if (playerOne = uid){
+            userIs = ("playerOne");
+            console.log(userIs);
+        }
+    })
+    
+    database.ref("/playerTwo").on("value", function(snapshot){
+        playerTwoSelect = snapshot.val().state;
+        playerTwo = snapshot.val().user;
+        
+        console.log(playerTwo)
+        if (playerTwoSelect = uid){
+            userIs = ("playerTwo");
+            console.log(userIs);
+        }
+    })
 
     
-
     
     
 
