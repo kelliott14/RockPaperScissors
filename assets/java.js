@@ -62,7 +62,15 @@ $(document).ready(function() {
         database.ref("/state").set({
             state: null
         })
+
+        database.ref("/round").set({
+            state: null
+        })
         
+        p1WinsTally = 0;
+        p1LossTally = 0;
+        p2WinsTally = 0;
+        p2LossTally = 0;
         
     //TO-DO: clear chatbox
     }
@@ -284,16 +292,13 @@ database.ref("/playerTwo").on("value", function(snapshot){
         
         
     });
-    
-
-   
 
     database.ref("/round").on("value", function(snapshot){
         checkWinner();
     })
 
     function checkWinner(){
-        
+        console.log("check winner called")
         if(p1Pick == p2Pick){
             $(".winnerButton").text("it's a tie!");
 
@@ -304,21 +309,25 @@ database.ref("/playerTwo").on("value", function(snapshot){
                 $(".winnerButton").text("Player One Wins!");
 
                 database.ref("/playerOne/Score").update({
-                    winsTally: 1
+                    winsTally: 1,
+                    lossesTally: 0
                 });
 
                 database.ref("/playerTwo/Score").update({
-                    lossesTally: 1
+                    lossesTally: 1,
+                    winsTally: 0
                 });
         }else{
             $(".winnerButton").text("Player Two Wins!")
             
             database.ref("/playerTwo/Score").update({
-                winsTally: 1
+                winsTally: 1,
+                lossesTally: 0
             });
 
             database.ref("/playerOne/Score").update({
-                lossesTally: 1
+                lossesTally: 1,
+                winsTally: 0
             });
         }
 
@@ -337,6 +346,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
     });
 
     function updateP1Scorecard(){
+        console.log("update scorecard called")
         var SCDiv = $("<div>");
 
         var p1W = $("<p>Wins: " + p1WinsTally + "</p>");
