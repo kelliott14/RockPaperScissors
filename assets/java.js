@@ -115,10 +115,12 @@ $(document).ready(function() {
                 $(".readyOneButton").text("Ready!");
 
                 if(playerTwoSelect){
-                database.ref("/state").update({
-                    state: "true",
-                })
+                    database.ref("/state").update({
+                        state: "true",
+                    })
                 }
+            
+                
             });
         });
     }
@@ -126,6 +128,7 @@ $(document).ready(function() {
     //on setting of Player One, it runs the set Player Two function
     database.ref("/playerOne").once("child_added", function(){
         selectPlayerTwo();
+        $("#playerOnePick").hide();
     });
 
     //player two select
@@ -166,9 +169,11 @@ $(document).ready(function() {
 
             if(playerOneSelect){
                 database.ref("/state").update({
-                state: "true",
+                    state: "true",
                 });
             }
+
+            $("#playerTwoPick").hide();
         });     
     }
 
@@ -193,22 +198,22 @@ $(document).ready(function() {
     });
 
     //After both players have been selected, it runs the play game function
-    database.ref("/state").once("child_added", function(){
+    database.ref("/state").on("child_added", function(){
         playGame();
     });   
 
     //Play Game function
     function playGame(){
-
-        $("#playerOnePick").hide();
-        $("#playerTwoPick").hide();
+        database.ref("/round/state").remove();        
+        
         $(".winnerButton").hide();
         $(".readyOneButton").hide();
         $(".readyTwoButton").hide();
 
         if (playerOne == uid){
-            var otherDiv1 = $(".playerTwoCard").html("<div>")
-            $(otherDiv1).addClass("notMine")
+
+            var otherDiv1 = $(".playerTwoCard").html("<div>");
+            $(otherDiv1).addClass("notMine");
            
             var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG'></div>");
             var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG'></div>");
@@ -218,11 +223,13 @@ $(document).ready(function() {
             $(paper).attr("fighter", "paper");
             $(rock).attr("fighter", "rock");
 
+            $(".playerOneCard").html("")
             $(".playerOneCard").append(scissors, paper, rock);
             $(".playerOneCard").addClass("card-group")
-
+            $(".playerOneCard").show();
          
         }else if (playerTwo == uid){
+
             var otherDiv2 = $(".playerOneCard").html("<div>");
             $(otherDiv2).addClass("notMine");
 
@@ -234,9 +241,11 @@ $(document).ready(function() {
             $(paper).attr("fighter", "paper");
             $(rock).attr("fighter", "rock");
 
-
+            $(".playerTwoCard").html("")
             $(".playerTwoCard").append(scissors, paper, rock);
             $(".playerTwoCard").addClass("card-group");
+            $(".playerTwoCard").show();
+
         }
     }
     
@@ -273,6 +282,7 @@ $(document).ready(function() {
         $(".readyOneButton").show();
         $(".readyOneButton").attr("id", "p1Play");
     });
+
     //After P1 makes selection, they click on the button to play, if P2 is ready, it will play
     $(".readySetGoCard").on("click", "#p1Play", function(){
         $(".playerOneCard").hide();
@@ -315,7 +325,7 @@ $(document).ready(function() {
     });
 
     //Once both players are ready, it runs the check winner function
-    database.ref("/round").on("value", function(snapshot){
+    database.ref("/round").on("child_added", function(snapshot){
         checkWinner();
     })
 
@@ -341,6 +351,16 @@ $(document).ready(function() {
 
     //compares the selection and declares the winner
     function checkWinner(){
+        database.ref("/playerOne").update({
+            round: false
+        });
+
+        database.ref("/playerTwo").update({
+            round: false
+        });
+
+        database.ref("/state/state").remove();
+
         var db2RefW = database.ref("/playerTwo/Score/winsTally")
         var db1RefW = database.ref("/playerOne/Score/winsTally")
         var db2RefL = database.ref("/playerTwo/Score/lossesTally")
@@ -367,9 +387,18 @@ $(document).ready(function() {
                 return p1WinsTally +1;
             });
 
+            db1RefL.transaction(function(p1LossTally){
+                return p1LossTally +0;
+            });
+
+            db2RefW.transaction(function(p2WinsTally){
+                return p2WinsTally +0;
+            });
+
         //where p2 is a winner
         }else{
             $(".winnerButton").text("Player Two Wins!");
+
             db2RefW.transaction(function(p2WinsTally){
                 return p2WinsTally +1;
             });
@@ -377,10 +406,21 @@ $(document).ready(function() {
             db1RefL.transaction(function(p1LossTally){
                 return p1LossTally +1;
             });
+
+            db1RefW.transaction(function(p1WinsTally){
+                return p1WinsTally +0;
+            });
+
+            db2RefL.transaction(function(p2LossTally){
+                return p2LossTally +0;
+            });
+
         }
 
         updateP1Scorecard();
         updateP2Scorecard();
+
+        anotherRound();
     }
 
     
@@ -406,6 +446,21 @@ $(document).ready(function() {
         $(SCDiv).append(p2W, p2L);
         $(".P2SCard").html(SCDiv);
     }
+
+    function anotherRound(){
+        $(".readyOneButton").text("Another Round?");
+        $(".readyTwoButton").text("Another Round?");
+        $(".readyOneButton").show();
+        $(".readyTwoButton").show();
+        $(".readyOneButton").addClass("anotherRound");
+        $(".readyTwoButton").addClass("anotherRound");
+    }
+
+    $(".readySetGoCard").on("click", ".anotherRound", function(){
+        database.ref("/state").set({
+            state: "true",
+    });
+    });       
 
 
 });
