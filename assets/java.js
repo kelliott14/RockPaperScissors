@@ -75,12 +75,13 @@ $(document).ready(function() {
         playerOne = "";
         playerTwo = "";
         
+        selectPlayerOne(); 
     //TO-DO: clear chatbox
     }
     
     //calling initial functions on page load
     onLoad();
-    selectPlayerOne();    
+       
 
     //Player One select
     function selectPlayerOne(){
@@ -118,9 +119,7 @@ $(document).ready(function() {
                     database.ref("/state").update({
                         state: "true",
                     })
-                }
-            
-                
+                }  
             });
         });
     }
@@ -153,8 +152,8 @@ $(document).ready(function() {
             })
     
             database.ref("/playerTwo").set({
-                    p2ID: user.uid,
-                    p2Selected: "true"
+                p2ID: user.uid,
+                p2Selected: "true"
             });
             
             $(".readySetGoCard").show();
@@ -182,8 +181,8 @@ $(document).ready(function() {
         var test = snapshot.child("p1Selected").exists();
 
         if (test){
-        playerOneSelect = snapshot.val().p1Selected;
-        playerOne = snapshot.val().p1ID;
+            playerOneSelect = snapshot.val().p1Selected;
+            playerOne = snapshot.val().p1ID;
         }
     });
 
@@ -192,8 +191,8 @@ $(document).ready(function() {
         var test = snapshot.child("p2Selected").exists();
 
         if (test){
-        playerTwoSelect = snapshot.val().p2Selected;
-        playerTwo = snapshot.val().p2ID
+            playerTwoSelect = snapshot.val().p2Selected;
+            playerTwo = snapshot.val().p2ID
         }
     });
 
@@ -351,6 +350,9 @@ $(document).ready(function() {
 
     //compares the selection and declares the winner
     function checkWinner(){
+
+        $(".readyOneButton").removeAttr("p1Play");
+        $(".readyTwoButton").removeAttr("p2Play");
         database.ref("/playerOne").update({
             round: false
         });
@@ -460,6 +462,9 @@ $(document).ready(function() {
         database.ref("/state").set({
             state: "true",
     });
+
+        $(".readyOneButton").removeClass("anotherRound");
+        $(".readyTwoButton").removeClass("anotherRound");
     });       
 
 

@@ -7,3 +7,8 @@ img{
     height: auto;
     float: left;
 }
+
+.playerRow,
+.scorecardRow{
+    height: 50%;
+}
