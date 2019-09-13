@@ -1,14 +1,33 @@
+body{
+    background-color: #9dccc2;
+}
+
 .notMine{
     width: 33%;
+    border: none;
 }
 
 img{
-    width: 100px;
     height: auto;
+    width: 100px;
     float: left;
 }
 
 .playerRow,
 .scorecardRow{
-    height: 50%;
+    height: 50vh;
+}
+
+.readySetGoCard{
+    border: none;
+    width: 270px;
+}
+
+.playerOneCard,
+.playerTwoCard{
+    background-color: #87B0A7
+}
+
+.rsgButton{
+    margin: 10px;
 }

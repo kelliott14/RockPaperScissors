@@ -17,17 +17,17 @@
     <div class="container">
     <div class="row scorecardRow">
             <div class="col-md-4">
-                <div class="card text-center P1SCard">
-                    <p>Placeholder Text: 0</p>
-                    <p>Placeholder Text: 0</p>
+                <div class="card text-center">
+                    <h2>Player One: </h2>
+                    <div class="P1SCard"></div>
                 </div>
             </div>
             <div class="col-md-4">
             </div>
             <div class="col-md-4">
-                <div class="card text-center P2SCard">
-                        <p>Placeholder Text: 0</p>
-                        <p>Placeholder Text: 0</p>
+                <div class="card text-center">
+                        <h2>Player Two: </h2>
+                        <div class="P2SCard"></div>
                     </div>
                 </div>
             </div>
@@ -35,40 +35,25 @@
     <div class="row playerRow">
         <div class="col-md-5">
             <div class="card text-center playerOneCard">
-                <h5 class="card-title" id="playerOneText"></h5>
+                <h5 class="card-title" id="playerOneText">Player One: </h5>
                 <div class="card-img-top rounded mx-auto d-block playerOneDiv"></div>
                 
             </div>
         </div>
         <div class="col-md-2">
             <div class="card readySetGoCard">
-                <button type="button" class="btn btn-outline-warning readyOneButton">Player One Ready!</button>
-                <button type="button" class="btn btn-outline-warning readyTwoButton">Player Two Ready!</button>
-                <button type="button" class="btn btn-outline-warning winnerButton">Winner Winner</button>
+                <h2 class="winnerButton rsgButton">Winner Winner</h2>
+                <button type="button" class="btn btn-outline-warning readyOneButton rsgButton">Player One Ready!</button>
+                <button type="button" class="btn btn-outline-warning readyTwoButton rsgButton">Player Two Ready!</button>
+                
             </div>
         </div>
         <div class="col-md-5">
             <div class="card text-center playerTwoCard">
-                <h5 class="card-title" id="playerTwoText"></h5>
+                <h5 class="card-title" id="playerTwoText">Player Two:</h5>
                 <div class="card-img-top rounded mx-auto d-block playerTwoDiv"></div>
             </div>
         </div>
-    </div>
-
-    <div class="container">
-        <div class="row chatboxRow">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">                
-                <div class="jumbotron">
-                    <h2 class="display-4">Chat</h2>
-                    <p class="lead">Placeholder text</p>
-                    <p class="lead">Placeholder text</p>
-                    
-                </div>
-            </div>
-            <div class="col-md-2"></div>
-        </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/6.6.0/firebase-app.js"></script>

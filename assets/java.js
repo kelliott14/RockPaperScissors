@@ -34,8 +34,8 @@ $(document).ready(function() {
 
     //on initial load of the page
     function onLoad(){
-        var pickPlayerOne = $("<button>Player One</button>");
-        var pickPlayerTwo = $("<button>Player Two</button>");
+        var pickPlayerOne = $("<button>Pick Player One</button>");
+        var pickPlayerTwo = $("<button>Pick Player Two</button>");
 
         $(pickPlayerOne).addClass("btn btn-primary btn-block");
         $(pickPlayerTwo).addClass("btn btn-danger btn-block");
@@ -214,9 +214,9 @@ $(document).ready(function() {
             var otherDiv1 = $(".playerTwoCard").html("<div>");
             $(otherDiv1).addClass("notMine");
            
-            var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG'></div>");
-            var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG'></div>");
-            var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG'></div>");
+            var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG' class='card-img-top text-center'></div>");
+            var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG' class='card-img-top text-center'></div>");
+            var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG' class='card-img-top text-center'></div>");
 
             $(scissors).attr("fighter", "scissors");
             $(paper).attr("fighter", "paper");
@@ -232,9 +232,9 @@ $(document).ready(function() {
             var otherDiv2 = $(".playerOneCard").html("<div>");
             $(otherDiv2).addClass("notMine");
 
-            var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG'></div>");
-            var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG'></div>");
-            var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG'></div>");
+            var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG' class='card-img-top text-center'></div>");
+            var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG' class='card-img-top text-center'></div>");
+            var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG' class='card-img-top text-center'></div>");
 
             $(scissors).attr("fighter", "scissors");
             $(paper).attr("fighter", "paper");
@@ -286,6 +286,7 @@ $(document).ready(function() {
     $(".readySetGoCard").on("click", "#p1Play", function(){
         $(".playerOneCard").hide();
         $("#p1Play").hide();
+        $(".notMine").html("<h2>Waiting other Player...</h2>")
 
         if(p2Round){
             database.ref("/round").set({
@@ -313,6 +314,7 @@ $(document).ready(function() {
     $(".readySetGoCard").on("click", "#p2Play", function(){
         $(".playerTwoCard").hide()
         $("#p2Play").hide();
+        $(".notMine").html("<h2>Waiting other Player...</h2>")
 
         if(p1Round){
             database.ref("/round").set({
@@ -450,12 +452,10 @@ $(document).ready(function() {
     }
 
     function anotherRound(){
+        $(".notMine").html("")
         $(".readyOneButton").text("Another Round?");
-        $(".readyTwoButton").text("Another Round?");
         $(".readyOneButton").show();
-        $(".readyTwoButton").show();
         $(".readyOneButton").addClass("anotherRound");
-        $(".readyTwoButton").addClass("anotherRound");
     }
 
     $(".readySetGoCard").on("click", ".anotherRound", function(){
@@ -464,7 +464,6 @@ $(document).ready(function() {
     });
 
         $(".readyOneButton").removeClass("anotherRound");
-        $(".readyTwoButton").removeClass("anotherRound");
     });       
 
 
