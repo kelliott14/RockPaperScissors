@@ -3,7 +3,6 @@ body{
 }
 
 .notMine{
-    width: 33%;
     border: none;
 }
 
@@ -20,7 +19,6 @@ img{
 
 .readySetGoCard{
     border: none;
-    width: 270px;
 }
 
 .playerOneCard,
@@ -30,4 +28,5 @@ img{
 
 .rsgButton{
     margin: 10px;
+    text-align: center;
 }

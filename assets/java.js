@@ -108,6 +108,7 @@ $(document).ready(function() {
 
             $(".readySetGoCard").show();
             $(".readyOneButton").text("Player One, are you ready?");
+            $("#playerTwoPick").hide();
             $(".readyOneButton").attr("id", "p1Ready")
             $(".readyTwoButton").hide();
             $(".winnerButton").hide();
@@ -160,6 +161,7 @@ $(document).ready(function() {
             $(".readyOneButton").hide();
             $(".readyTwoButton").attr("id", "p2Ready")
             $(".readyTwoButton").text("Player Two, are you ready?");
+            $("#playerTwoPick").hide();
             $(".winnerButton").hide();
         });
 
@@ -330,26 +332,6 @@ $(document).ready(function() {
         checkWinner();
     })
 
-    //updates the database with the wins and losses for P1
-    database.ref("/playerOne").on("value", function(snapshot){
-        var test = snapshot.child("Score").exists();
-
-        if (test){
-            p1WinsTally = snapshot.val().Score.winsTally;
-            p1LossTally = snapshot.val().Score.lossesTally
-        }
-    });
-    
-    //updates the database with the wins and losses for P2
-    database.ref("/playerTwo").on("value", function(snapshot){
-        var test = snapshot.child("Score").exists();
-
-        if (test){
-                p2WinsTally = snapshot.val().Score.winsTally;
-                p2LossTally = snapshot.val().Score.lossesTally;
-        }
-    });
-
     //compares the selection and declares the winner
     function checkWinner(){
 
@@ -383,40 +365,40 @@ $(document).ready(function() {
             (p1Pick == "paper") && (p2Pick == "rock")){
                 $(".winnerButton").text("Player One Wins!");
 
-            db2RefL.transaction(function(p2LossTally){
-                return p2LossTally +1;
+            db2RefL.transaction(function(lossesTally){
+                return lossesTally +1;
             });
 
-            db1RefW.transaction(function(p1WinsTally){
-                return p1WinsTally +1;
+            db1RefW.transaction(function(winsTally){
+                return winsTally +1;
             });
 
-            db1RefL.transaction(function(p1LossTally){
-                return p1LossTally +0;
+            db1RefL.transaction(function(lossesTally){
+                return lossesTally +0;
             });
 
-            db2RefW.transaction(function(p2WinsTally){
-                return p2WinsTally +0;
+            db2RefW.transaction(function(winsTally){
+                return winsTally +0;
             });
 
         //where p2 is a winner
         }else{
             $(".winnerButton").text("Player Two Wins!");
 
-            db2RefW.transaction(function(p2WinsTally){
-                return p2WinsTally +1;
+            db2RefW.transaction(function(winsTally){
+                return winsTally +1;
             });
 
-            db1RefL.transaction(function(p1LossTally){
-                return p1LossTally +1;
+            db1RefL.transaction(function(lossesTally){
+                return lossesTally +1;
             });
 
-            db1RefW.transaction(function(p1WinsTally){
-                return p1WinsTally +0;
+            db1RefW.transaction(function(winsTally){
+                return winsTally +0;
             });
 
-            db2RefL.transaction(function(p2LossTally){
-                return p2LossTally +0;
+            db2RefL.transaction(function(lossesTally){
+                return lossesTally +0;
             });
 
         }
@@ -427,7 +409,27 @@ $(document).ready(function() {
         anotherRound();
     }
 
+    //updates the database with the wins and losses for P1
+    database.ref("/playerOne").on("value", function(snapshot){
+        var test = snapshot.child("Score").exists();
+
+        if (test){
+            p1WinsTally = snapshot.val().Score.winsTally;
+            p1LossTally = snapshot.val().Score.lossesTally
+        }
+    });
     
+    //updates the database with the wins and losses for P2
+    database.ref("/playerTwo").on("value", function(snapshot){
+        var test = snapshot.child("Score").exists();
+
+        if (test){
+                p2WinsTally = snapshot.val().Score.winsTally;
+                p2LossTally = snapshot.val().Score.lossesTally;
+        }
+    });
+
+
     //Updates P1's scorecard
     function updateP1Scorecard(){
        
