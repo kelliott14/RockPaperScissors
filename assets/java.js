@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    
+    //firebase grab
     var config = {
         apiKey: "AIzaSyCxS0eBVsumuimkLasTR_4BqEIYFdDsUWU",
         authDomain: "bootcamp-5213b.firebaseapp.com",
@@ -12,6 +12,7 @@ $(document).ready(function() {
       
     firebase.initializeApp(config);
     
+    //variables
     var database = firebase.database();
 
     var playGame;
@@ -71,132 +72,131 @@ $(document).ready(function() {
         p1LossTally = 0;
         p2WinsTally = 0;
         p2LossTally = 0;
+        playerOne = "";
+        playerTwo = "";
         
     //TO-DO: clear chatbox
     }
     
+    //calling initial functions on page load
     onLoad();
     selectPlayerOne();    
 
     //Player One select
-function selectPlayerOne(){
-   $(".playerOneCard").show();
-   
-    $("body").on("click", "#playerOnePick", function(){
+    function selectPlayerOne(){
+        $(".playerOneCard").show();
+    
+        $("body").on("click", "#playerOnePick", function(){   
         
-    
-      firebase.auth().signInAnonymously().catch(function(error) {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-                });
-        user = firebase.auth().currentUser;
-        firebase.auth().onAuthStateChanged(function(user) {
-            if (user) {
-                var isAnonymous = user.isAnonymous;
-                uid = user.uid;
-            }
-        })
+            firebase.auth().signInAnonymously().catch(function(error) {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                        });
+                user = firebase.auth().currentUser;
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        var isAnonymous = user.isAnonymous;
+                        uid = user.uid;
+                    }
+                })
 
-        database.ref("/playerOne").set({
-                p1ID: user.uid,
-                p1Selected: "true"
-      });
+                database.ref("/playerOne").set({
+                        p1ID: user.uid,
+                        p1Selected: "true"
+            });
 
-    $(".readySetGoCard").show();
-    $(".readyOneButton").text("Player One, are you ready?");
-    $(".readyTwoButton").hide();
-    $(".winnerButton").hide();
-    
-    $(".readyOneButton").on("click", function(){
-        $(".readyOneButton").text("Ready!");
+            $(".readySetGoCard").show();
+            $(".readyOneButton").text("Player One, are you ready?");
+            $(".readyOneButton").attr("id", "p1Ready")
+            $(".readyTwoButton").hide();
+            $(".winnerButton").hide();
+            
+            $(".readySetGoCard").on("click", "#p1Ready", function(){
+                $(".readyOneButton").text("Ready!");
 
-        if(playerTwoSelect){
-        database.ref("/state").update({
-            state: "true",
-        })
+                if(playerTwoSelect){
+                database.ref("/state").update({
+                    state: "true",
+                })
+                }
+            });
+        });
     }
-    })
+
+    //on setting of Player One, it runs the set Player Two function
+    database.ref("/playerOne").on("child_added", function(){
+        selectPlayerTwo();
     });
-}
 
-database.ref("/playerOne").on("child_added", function(){
-    selectPlayerTwo();
-    
-})
-
-
-function selectPlayerTwo(){
-    $(".playerTwoCard").show();
     //player two select
-    $("body").on("click", "#playerTwoPick", function(){
+    function selectPlayerTwo(){
+        $(".playerTwoCard").show();
+        
+        $("body").on("click", "#playerTwoPick", function(){
+        
+            firebase.auth().signInAnonymously().catch(function(error) {
+                var errorCode = error.code;
+                var errorMessage = error.message;
+            });
+
+            user = firebase.auth().currentUser;
+            firebase.auth().onAuthStateChanged(function(user) {
+
+                if (user) {
+                    var isAnonymous = user.isAnonymous;
+                    uid = user.uid;
+                }
+            })
     
-        firebase.auth().signInAnonymously().catch(function(error) {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-                  });
-
-          user = firebase.auth().currentUser;
-          firebase.auth().onAuthStateChanged(function(user) {
-
-              if (user) {
-                  var isAnonymous = user.isAnonymous;
-                  uid = user.uid;
-              }
-          })
-  
-          database.ref("/playerTwo").set({
-                  p2ID: user.uid,
-                  p2Selected: "true"
+            database.ref("/playerTwo").set({
+                    p2ID: user.uid,
+                    p2Selected: "true"
+            });
+            
+            $(".readySetGoCard").show();
+            $(".readyOneButton").hide();
+            $(".readyTwoButton").attr("id", "p2Ready")
+            $(".readyTwoButton").text("Player Two, are you ready?");
+            $(".winnerButton").hide();
         });
 
-        
-        $(".readySetGoCard").show();
-        $(".readyOneButton").hide();
-        $(".readyTwoButton").text("Player Two, are you ready?");
-        $(".winnerButton").hide();
-      });
+        $(".readySetGoCard").on("click", "#p2Ready", function(){
+            $(".readyTwoButton").text("Ready!");
 
-        $(".readyTwoButton").on("click", function(){
-        $(".readyTwoButton").text("Ready!");
+            if(playerOneSelect){
+                database.ref("/state").update({
+                state: "true",
+                });
+            }
+        });     
+    }
 
-        if(playerOneSelect){
-            database.ref("/state").update({
-            state: "true",
-            });
+    //Setting the Player One values to the database
+    database.ref("/playerOne").on("value", function(snapshot){
+        var test = snapshot.child("p1Selected").exists();
+
+        if (test){
+        playerOneSelect = snapshot.val().p1Selected;
+        playerOne = snapshot.val().p1ID;
         }
+    });
 
-        })
+    //Setting the Player Two values to the database
+    database.ref("/playerTwo").on("value", function(snapshot){
+        var test = snapshot.child("p2Selected").exists();
 
-        
-    }
+        if (test){
+        playerTwoSelect = snapshot.val().p2Selected;
+        playerTwo = snapshot.val().p2ID
+        }
+    });
 
-
-database.ref("/playerOne").on("value", function(snapshot){
-    var test = snapshot.child("p1Selected").exists();
-
-    if (test){
-    playerOneSelect = snapshot.val().p1Selected;
-    playerOne = snapshot.val().p1ID;
-    }
-});
-
-database.ref("/playerTwo").on("value", function(snapshot){
-    var test = snapshot.child("p2Selected").exists();
-
-    if (test){
-    playerTwoSelect = snapshot.val().p2Selected;
-    playerTwo = snapshot.val().p2ID
-    }
-});
-
-
-
+    //After both players have been selected, it runs the play game function
     database.ref("/state").on("child_added", function(){
         playGame();
-        })
-    
-   
+    });   
 
+    //Play Game function
     function playGame(){
 
         $("#playerOnePick").hide();
@@ -222,23 +222,24 @@ database.ref("/playerTwo").on("value", function(snapshot){
 
          
         }else if (playerTwo == uid){
-                var otherDiv2 = $(".playerOneCard").html("<div>")
-                $(otherDiv2).addClass("notMine")
-    
-                var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG'></div>");
-                var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG'></div>");
-                var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG'></div>");
-    
-                $(scissors).attr("fighter", "scissors");
-                $(paper).attr("fighter", "paper");
-                $(rock).attr("fighter", "rock");
+            var otherDiv2 = $(".playerOneCard").html("<div>");
+            $(otherDiv2).addClass("notMine");
+
+            var scissors = $("<div class = 'card fighterCard'><img src='./assets/images/ScissorsIcon.JPG'></div>");
+            var paper = $("<div class = 'card fighterCard'><img src='./assets/images/PaperIcon.JPG'></div>");
+            var rock = $("<div class = 'card fighterCard'><img src='./assets/images/RockIcon.JPG'></div>");
+
+            $(scissors).attr("fighter", "scissors");
+            $(paper).attr("fighter", "paper");
+            $(rock).attr("fighter", "rock");
 
 
-                $(".playerTwoCard").append(scissors, paper, rock);
-                $(".playerTwoCard").addClass("card-group")
-            }
+            $(".playerTwoCard").append(scissors, paper, rock);
+            $(".playerTwoCard").addClass("card-group");
         }
+    }
     
+    //During play game function, where P1 picks a S, P or R option
     $(".playerOneCard").on("click", ".fighterCard", function(){
         p1Pick = $(this).attr("fighter");
 
@@ -247,32 +248,33 @@ database.ref("/playerTwo").on("value", function(snapshot){
             round: true
          });
          
-        
-
         $(".readyOneButton").text("Play");
         $(".readyOneButton").show();
         $(".readyOneButton").attr("id", "p1Play");
 
     });
 
+    //sends P1's selection to the database
     database.ref("/playerOne").on("value", function(snapshot){
         var test = snapshot.child("pick").exists();
 
-    if (test){
-            p1Pick = snapshot.val().pick;
-            p1Round = snapshot.val().round;
-    }
+        if (test){
+                p1Pick = snapshot.val().pick;
+                p1Round = snapshot.val().round;
+        }
     });
     
+    //sends P2's selection to the database
     database.ref("/playerTwo").on("value", function(snapshot){
         var test = snapshot.child("pick").exists();
 
-    if (test){
-            p2Pick = snapshot.val().pick;
-            p2Round = snapshot.val().round;   
-    }     
-        })
+        if (test){
+                p2Pick = snapshot.val().pick;
+                p2Round = snapshot.val().round;   
+        }     
+    });
 
+    //After P1 makes selection, they click on the button to play, if P2 is ready, it will play
     $(".readySetGoCard").on("click", "#p1Play", function(){
 
         if(p2Round){
@@ -282,6 +284,7 @@ database.ref("/playerTwo").on("value", function(snapshot){
         }
     })
 
+    //P2 makes a selection
     $(".playerTwoCard").on("click", ".fighterCard", function(){
         p2Pick = $(this).attr("fighter");
 
@@ -290,14 +293,13 @@ database.ref("/playerTwo").on("value", function(snapshot){
             round: true
          });
 
-        
-
         $(".readyTwoButton").text("Play");
         $(".readyTwoButton").show();
         $(".readyTwoButton").attr("id", "p2Play")
 
-    })
+    });
 
+    //After P2 makes selection, they click on the button to play, if P1 is ready, it will play
     $(".readySetGoCard").on("click", "#p2Play", function(){
 
         if(p1Round){
@@ -305,39 +307,42 @@ database.ref("/playerTwo").on("value", function(snapshot){
             state: "true",
             });
         }
-        
-        
     });
 
+    //Once both players are ready, it runs the check winner function
     database.ref("/round").on("value", function(snapshot){
         checkWinner();
-    
+
     })
 
-database.ref("/playerOne").on("value", function(snapshot){
+    //updates the database with the wins and losses for P1
+    database.ref("/playerOne").on("value", function(snapshot){
         var test = snapshot.child("Score").exists();
 
-    if (test){
-        p1WinsTally = snapshot.val().Score.winsTally;
-        p1LossTally = snapshot.val().Score.lossesTally
-    }
+        if (test){
+            p1WinsTally = snapshot.val().Score.winsTally;
+            p1LossTally = snapshot.val().Score.lossesTally
+        }
     });
     
+    //updates the database with the wins and losses for P2
     database.ref("/playerTwo").on("value", function(snapshot){
         var test = snapshot.child("Score").exists();
 
-    if (test){
-        p2WinsTally = snapshot.val().Score.winsTally;
-        p2LossTally = snapshot.val().Score.lossesTally
-    }
+        if (test){
+            p2WinsTally = snapshot.val().Score.winsTally;
+            p2LossTally = snapshot.val().Score.lossesTally
+        }
     });
 
-
+    //compares the selection and declares the winner
     function checkWinner(){
         
+        //where it's a tie
         if(p1Pick == p2Pick){
-            $(".winnerButton").text("it's a tie!");
+            $(".winnerButton").text("It's a tie!");
 
+        //where P1 is a winner
         }else if(
             (p1Pick == "rock") && (p2Pick == "scissors") ||
             (p1Pick == "scissors") && (p2Pick == "paper") ||
@@ -353,8 +358,9 @@ database.ref("/playerOne").on("value", function(snapshot){
                     lossesTally: 1,
                     winsTally: 0
                 });
+        //where p2 is a winner
         }else{
-            $(".winnerButton").text("Player Two Wins!")
+            $(".winnerButton").text("Player Two Wins!");
             
             database.ref("/playerTwo/Score").update({
                 winsTally: 1,
@@ -372,7 +378,7 @@ database.ref("/playerOne").on("value", function(snapshot){
     }
 
     
-
+    //Updates P1's scorecard
     function updateP1Scorecard(){
        
         var SCDiv = $("<div>");
@@ -384,6 +390,7 @@ database.ref("/playerOne").on("value", function(snapshot){
         $(".P1SCard").html(SCDiv);
     }
 
+    //Updates P2's scorecard
     function updateP2Scorecard(){
         var SCDiv = $("<div>");
 
