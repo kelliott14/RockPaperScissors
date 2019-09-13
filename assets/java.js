@@ -124,12 +124,13 @@ $(document).ready(function() {
     }
 
     //on setting of Player One, it runs the set Player Two function
-    database.ref("/playerOne").on("child_added", function(){
+    database.ref("/playerOne").once("child_added", function(){
         selectPlayerTwo();
     });
 
     //player two select
     function selectPlayerTwo(){
+        
         $(".playerTwoCard").show();
         
         $("body").on("click", "#playerTwoPick", function(){
@@ -192,7 +193,7 @@ $(document).ready(function() {
     });
 
     //After both players have been selected, it runs the play game function
-    database.ref("/state").on("child_added", function(){
+    database.ref("/state").once("child_added", function(){
         playGame();
     });   
 
@@ -239,21 +240,6 @@ $(document).ready(function() {
         }
     }
     
-    //During play game function, where P1 picks a S, P or R option
-    $(".playerOneCard").on("click", ".fighterCard", function(){
-        p1Pick = $(this).attr("fighter");
-
-        database.ref("/playerOne").update({
-            pick: p1Pick,
-            round: true
-         });
-         
-        $(".readyOneButton").text("Play");
-        $(".readyOneButton").show();
-        $(".readyOneButton").attr("id", "p1Play");
-
-    });
-
     //sends P1's selection to the database
     database.ref("/playerOne").on("value", function(snapshot){
         var test = snapshot.child("pick").exists();
@@ -274,14 +260,29 @@ $(document).ready(function() {
         }     
     });
 
+    //During play game function, where P1 picks a S, P or R option
+    $(".playerOneCard").on("click", ".fighterCard", function(){
+        p1Pick = $(this).attr("fighter");
+
+        database.ref("/playerOne").update({
+            pick: p1Pick,
+            round: true
+         });
+         
+        $(".readyOneButton").text("Play");
+        $(".readyOneButton").show();
+        $(".readyOneButton").attr("id", "p1Play");
+    });
     //After P1 makes selection, they click on the button to play, if P2 is ready, it will play
     $(".readySetGoCard").on("click", "#p1Play", function(){
+        $(".playerOneCard").hide();
+        $("#p1Play").hide();
 
         if(p2Round){
             database.ref("/round").set({
             state: "true",
             });
-        }
+        } 
     })
 
     //P2 makes a selection
@@ -301,18 +302,21 @@ $(document).ready(function() {
 
     //After P2 makes selection, they click on the button to play, if P1 is ready, it will play
     $(".readySetGoCard").on("click", "#p2Play", function(){
+        $(".playerTwoCard").hide()
+        $("#p2Play").hide();
 
         if(p1Round){
             database.ref("/round").set({
             state: "true",
             });
         }
+
+        
     });
 
     //Once both players are ready, it runs the check winner function
     database.ref("/round").on("value", function(snapshot){
         checkWinner();
-
     })
 
     //updates the database with the wins and losses for P1
@@ -330,13 +334,19 @@ $(document).ready(function() {
         var test = snapshot.child("Score").exists();
 
         if (test){
-            p2WinsTally = snapshot.val().Score.winsTally;
-            p2LossTally = snapshot.val().Score.lossesTally
+                p2WinsTally = snapshot.val().Score.winsTally;
+                p2LossTally = snapshot.val().Score.lossesTally;
         }
     });
 
     //compares the selection and declares the winner
     function checkWinner(){
+        var db2RefW = database.ref("/playerTwo/Score/winsTally")
+        var db1RefW = database.ref("/playerOne/Score/winsTally")
+        var db2RefL = database.ref("/playerTwo/Score/lossesTally")
+        var db1RefL = database.ref("/playerOne/Score/lossesTally")
+
+        $(".winnerButton").show();
         
         //where it's a tie
         if(p1Pick == p2Pick){
@@ -349,27 +359,23 @@ $(document).ready(function() {
             (p1Pick == "paper") && (p2Pick == "rock")){
                 $(".winnerButton").text("Player One Wins!");
 
-                database.ref("/playerOne/Score").update({
-                    winsTally: 1,
-                    lossesTally: 0
-                });
+            db2RefL.transaction(function(p2LossTally){
+                return p2LossTally +1;
+            });
 
-                database.ref("/playerTwo/Score").update({
-                    lossesTally: 1,
-                    winsTally: 0
-                });
+            db1RefW.transaction(function(p1WinsTally){
+                return p1WinsTally +1;
+            });
+
         //where p2 is a winner
         }else{
             $(".winnerButton").text("Player Two Wins!");
-            
-            database.ref("/playerTwo/Score").update({
-                winsTally: 1,
-                lossesTally: 0
+            db2RefW.transaction(function(p2WinsTally){
+                return p2WinsTally +1;
             });
 
-            database.ref("/playerOne/Score").update({
-                lossesTally: 1,
-                winsTally: 0
+            db1RefL.transaction(function(p1LossTally){
+                return p1LossTally +1;
             });
         }
 
