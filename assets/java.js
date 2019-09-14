@@ -205,7 +205,8 @@ $(document).ready(function() {
 
     //Play Game function
     function playGame(){
-        database.ref("/round/state").remove();        
+        database.ref("/round/state").remove(); 
+        database.ref("/score/state").remove();      
         
         $(".winnerButton").hide();
         $(".readyOneButton").hide();
@@ -327,13 +328,23 @@ $(document).ready(function() {
         
     });
 
-    //Once both players are ready, it runs the check winner function
+    //Once both players are ready, it runs the check winner function for p1
     database.ref("/round").on("child_added", function(snapshot){
-        checkWinner();
+        if (playerOne == uid){
+            checkWinnerP1();
+
+        }
+    });
+
+    //where score is updated, the check winner function for p2 will run
+    database.ref("/score").on("child_added", function(snapshot){
+        if (playerTwo == uid){
+            checkWinnerP2();
+        }
     })
 
     //compares the selection and declares the winner
-    function checkWinner(){
+    function checkWinnerP1(){
 
         $(".readyOneButton").removeAttr("p1Play");
         $(".readyTwoButton").removeAttr("p2Play");
@@ -403,13 +414,56 @@ $(document).ready(function() {
 
         }
 
+        database.ref("/score").set({
+            state: "true",
+            });
+
         updateP1Scorecard();
         updateP2Scorecard();
 
         anotherRound();
     }
 
-    //updates the database with the wins and losses for P1
+    function checkWinnerP2(){
+
+        $(".readyOneButton").removeAttr("p1Play");
+        $(".readyTwoButton").removeAttr("p2Play");
+        database.ref("/playerOne").update({
+            round: false
+        });
+
+        database.ref("/playerTwo").update({
+            round: false
+        });
+
+        database.ref("/state/state").remove();
+
+        $(".winnerButton").show();
+        
+        //where it's a tie
+        if(p1Pick == p2Pick){
+            $(".winnerButton").text("It's a tie!");
+
+        //where P1 is a winner
+        }else if(
+            (p1Pick == "rock") && (p2Pick == "scissors") ||
+            (p1Pick == "scissors") && (p2Pick == "paper") ||
+            (p1Pick == "paper") && (p2Pick == "rock")){
+                $(".winnerButton").text("Player One Wins!")
+
+        //where p2 is a winner
+        }else{
+            $(".winnerButton").text("Player Two Wins!");
+           
+        }
+
+        updateP1Scorecard();
+        updateP2Scorecard();
+
+        anotherRound();
+    }
+
+    //updates the the wins and losses for P1 from the database
     database.ref("/playerOne").on("value", function(snapshot){
         var test = snapshot.child("Score").exists();
 
@@ -419,13 +473,13 @@ $(document).ready(function() {
         }
     });
     
-    //updates the database with the wins and losses for P2
+    //updates the the wins and losses for P2 from the database
     database.ref("/playerTwo").on("value", function(snapshot){
         var test = snapshot.child("Score").exists();
 
         if (test){
-                p2WinsTally = snapshot.val().Score.winsTally;
-                p2LossTally = snapshot.val().Score.lossesTally;
+            p2WinsTally = snapshot.val().Score.winsTally;
+            p2LossTally = snapshot.val().Score.lossesTally;
         }
     });
 
